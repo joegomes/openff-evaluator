@@ -120,14 +120,20 @@ class MoleFraction(Amount):
     def validate(self, attribute_type=None):
         super(MoleFraction, self).validate(attribute_type)
 
-        if self.value <= 0.0 or self.value > 1.0:
+        if self.value < 0.0 and self.value > -1e-2:
+            self.value = 1e-5
+        
+        if self.value >= 1.0:
+            self.value = 1.0
 
+        if self.value <= 0.0 or self.value > 1.0:
+            print(self.value)
             raise ValueError(
                 "A mole fraction must be greater than zero, and less than or "
                 "equal to one."
             )
 
-        if math.floor(self.value * 1e6) < 1:
+        if math.floor(self.value * 1e7) < 1:
 
             raise ValueError(
                 "Mole fractions are only precise to the sixth "
