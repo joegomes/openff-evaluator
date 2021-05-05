@@ -163,7 +163,7 @@ class Substance(AttributeClass):
                     ]
                 )
 
-            if np.isclose(total_mole_fraction, 1.0):
+            if np.isclose(total_mole_fraction, 1.0, rtol = 1e-1):
                 total_mole_fraction = 1.0
 
             if total_mole_fraction > 1.0:
@@ -450,7 +450,7 @@ class Substance(AttributeClass):
                     ]
                 )
 
-            if not np.isclose(total_mole_fraction, 1.0):
+            if not np.isclose(total_mole_fraction, 1.0, rtol = 1e-3):
 
                 raise ValueError(
                     f"The total mole fraction of this substance "

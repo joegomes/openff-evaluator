@@ -27,12 +27,10 @@ logger = logging.getLogger(__name__)
 
 def _unit_from_thermoml_string(full_string):
     """Extract the unit from a ThermoML property name.
-
     Parameters
     ----------
     full_string: str
         The string to convert to a Unit object.
-
     Returns
     ----------
     openff.evaluator.unit.Unit
@@ -51,12 +49,10 @@ def _unit_from_thermoml_string(full_string):
 
 def _phase_from_thermoml_string(string):
     """Converts a ThermoML string to a PropertyPhase
-
     Parameters
     ----------
     string: str
         The string to convert to a PropertyPhase
-
     Returns
     ----------
     PropertyPhase
@@ -94,12 +90,10 @@ class _ConstraintType(Enum):
     @staticmethod
     def from_node(node):
         """Converts either a ConstraintType or VariableType xml node to a _ConstraintType.
-
         Parameters
         ----------
         node: xml.etree.Element
             The xml node to convert.
-
         Returns
         ----------
         _ConstraintType
@@ -119,12 +113,10 @@ class _ConstraintType(Enum):
     def is_composition_constraint(self):
         """Checks whether the purpose of this constraint is
         to constrain the substance composition.
-
         Returns
         -------
         bool
             True if the constraint type is either a
-
             - `_ConstraintType.ComponentMoleFraction`
             - `_ConstraintType.ComponentMassFraction`
             - `_ConstraintType.ComponentMolality`
@@ -161,14 +153,12 @@ class _Constraint:
     @classmethod
     def from_node(cls, constraint_node, namespace):
         """Creates a _Constraint from an xml node.
-
         Parameters
         ----------
         constraint_node: Element
             The xml node to convert.
         namespace: dict of str and str
             The xml namespace.
-
         Returns
         ----------
         _Constraint, optional
@@ -208,14 +198,12 @@ class _Constraint:
     def from_variable(cls, variable, value):
         """Creates a _Constraint from an existing
         `_VariableDefinition` variable definition.
-
         Parameters
         ----------
         variable: _VariableDefinition
             The variable to convert.
         value: openff.evaluator.unit.Quantity
             The value of the constant.
-
         Returns
         ----------
         _Constraint
@@ -254,14 +242,12 @@ class _VariableDefinition:
     @classmethod
     def from_node(cls, variable_node, namespace):
         """Creates a `_VariableDefinition` from an xml node.
-
         Parameters
         ----------
         variable_node: xml.etree.Element
             The xml node to convert.
         namespace: dict of str and str
             The xml namespace.
-
         Returns
         ----------
         _VariableDefinition
@@ -310,14 +296,12 @@ class _PropertyUncertainty:
     @classmethod
     def from_xml(cls, node, namespace):
         """Creates a _PropertyUncertainty from an xml node.
-
         Parameters
         ----------
         node: Element
             The xml node to convert.
         namespace: dict of str and str
             The xml namespace.
-
         Returns
         ----------
         _Compound
@@ -367,12 +351,10 @@ class _Compound:
     @staticmethod
     def smiles_from_inchi_string(inchi_string):
         """Attempts to create a SMILES pattern from an inchi string.
-
         Parameters
         ----------
         inchi_string: str
             The InChI string to convert.
-
         Returns
         ----------
         str, optional
@@ -391,7 +373,8 @@ class _Compound:
         molecule = rdkit.Chem.MolFromInchi(inchi_string, removeHs=False)
 
         if not molecule:
-            raise ValueError(f"The InchI string ({inchi_string}) could not be parsed")
+            return None
+            #raise ValueError(f"The InchI string ({inchi_string}) could not be parsed")
 
         try:
             return mol_to_smiles(molecule, explicit_hydrogen=False, mapped=False)
@@ -401,12 +384,10 @@ class _Compound:
     @staticmethod
     def smiles_from_thermoml_smiles_string(thermoml_string):
         """Attempts to create a SMILES pattern from a thermoml smiles string.
-
         Parameters
         ----------
         thermoml_string: str
             The string to convert.
-
         Returns
         ----------
         str, optional
@@ -423,7 +404,6 @@ class _Compound:
     @staticmethod
     def smiles_from_common_name(common_name):
         """Attempts to create a SMILES pattern from an IUPAC name.
-
         Parameters
         ----------
         common_name: str
@@ -461,14 +441,12 @@ class _Compound:
     @classmethod
     def from_xml_node(cls, node, namespace):
         """Creates a _Compound from an xml node.
-
         Parameters
         ----------
         node: Element
             The xml node to convert.
         namespace: dict of str and str
             The xml namespace.
-
         Returns
         ----------
         _Compound
@@ -537,7 +515,6 @@ class _PureOrMixtureData:
     def extract_compound_indices(node, namespace, compounds):
         """Extract a list of the compound indices which a given `PureOrMixtureData`
         node depends upon.
-
         Parameters
         ----------
         node: xml.etree.Element
@@ -586,7 +563,6 @@ class _PureOrMixtureData:
         """Extract those property definitions defined by a PureOrMixtureData
         node. The extracted definitions are not extracted, as these a defined
         elsewhere in the archive file.
-
         Parameters
         ----------
         node: xml.etree.Element
@@ -595,7 +571,6 @@ class _PureOrMixtureData:
             The xml namespace.
         parent_phases: PropertyPhase
             The phases specified by the parent PureOrMixtureData node.
-
         Returns
         ----------
         dict of int and ThermoMLProperty
@@ -629,7 +604,6 @@ class _PureOrMixtureData:
     def validate_constraint(constraint, compounds):
         """Validates a constraint object - this may be either
         a full `_Constraint` or just a `_VariableDefinition`.
-
         Parameters
         ----------
         constraint: _Constraint or _VariableDefinition
@@ -637,7 +611,6 @@ class _PureOrMixtureData:
         compounds: dict of int and _Compound
             A dictionary of the compounds the parent PureOrMixtureData was
             measured for.
-
         Returns
         -------
         bool
@@ -676,7 +649,6 @@ class _PureOrMixtureData:
     def extract_global_constraints(node, namespace, compounds):
         """Extract the constraints which should be applied to all of
         the properties defined in a `PureOrMixtureData` node.
-
         Parameters
         ----------
         node: xml.etree.Element
@@ -686,7 +658,6 @@ class _PureOrMixtureData:
         compounds: dict of int and _Compound
             A dictionary of the compounds this PureOrMixtureData was
             measured for.
-
         Returns
         ----------
         list of _Constraint, optional
@@ -713,7 +684,6 @@ class _PureOrMixtureData:
         """Extract all of the 'variables' in a PureOrMixtureData node.
         These are simply constraints whose values are defined elsewhere
         in the archive.
-
         Parameters
         ----------
         node: xml.etree.Element
@@ -722,7 +692,6 @@ class _PureOrMixtureData:
             The xml namespace.
         compounds: dict of int and _Compound
             A dictionary of the compounds this PureOrMixtureData was calculated for.
-
         Returns
         ----------
         dict of int and _VariableDefinition
@@ -746,7 +715,6 @@ class _PureOrMixtureData:
     def extract_uncertainty(node, namespace, property_definition):
         """Extracts the uncertainties on the measured properties
         contained in this `PureOrMixtureData` node.
-
         Parameters
         ----------
         node: xml.etree.Element
@@ -755,7 +723,6 @@ class _PureOrMixtureData:
             The xml namespace.
         property_definition: ThermoMLProperty
             The property to which this uncertainty is attached.
-
         Returns
         -------
         float, optional
@@ -833,12 +800,10 @@ class _PureOrMixtureData:
     def _smiles_to_molecular_weight(smiles):
         """Calculates the molecular weight of a substance specified
         by a smiles string.
-
         Parameters
         ----------
         smiles: str
             The smiles string to calculate the molecular weight of.
-
         Returns
         -------
         openff.evaluator.unit.Quantity
@@ -853,13 +818,14 @@ class _PureOrMixtureData:
             molecule = Molecule.from_smiles(smiles)
 
         except Exception as e:
+            molecular_weight = 0.0 * simtk_unit.dalton
+            return openmm_quantity_to_pint(molecular_weight)
+            #formatted_exception = traceback.format_exception(None, e, e.__traceback__)
 
-            formatted_exception = traceback.format_exception(None, e, e.__traceback__)
-
-            raise ValueError(
-                f"The toolkit raised an exception for the "
-                f"{smiles} smiles pattern: {formatted_exception}"
-            )
+            #raise ValueError(
+            #    f"The toolkit raised an exception for the "
+            #    f"{smiles} smiles pattern: {formatted_exception}"
+            #)
 
         molecular_weight = 0.0 * simtk_unit.dalton
 
@@ -874,7 +840,6 @@ class _PureOrMixtureData:
     ):
         """Converts a set of solvent mole fractions to moles for a
         given mass of solvent.
-
         Parameters
         ----------
         solvent_mass: openff.evaluator.unit.Quantity
@@ -883,7 +848,6 @@ class _PureOrMixtureData:
             The mole fractions of any solvent compounds in the system.
         solvent_compounds: dict of int and float
             A dictionary of any solvent compounds in the system.
-
         Returns
         -------
         dict of int and openff.evaluator.unit.Quantity
@@ -915,7 +879,6 @@ class _PureOrMixtureData:
     @staticmethod
     def _convert_mole_fractions(constraints, compounds, solvent_mole_fractions=None):
         """Converts a set of `_Constraint` to mole fractions.
-
         Parameters
         ----------
         constraints: list of _Constraint
@@ -926,7 +889,6 @@ class _PureOrMixtureData:
             The mole fractions of any solvent compounds in the system,
             where the total mole fraction of all solvents must be equal
             to one.
-
         Returns
         -------
         dict of int and float
@@ -998,7 +960,6 @@ class _PureOrMixtureData:
         constraints, compounds, solvent_mole_fractions=None, solvent_compounds=None
     ):
         """Converts a set of `_Constraint` to mole fractions.
-
         Parameters
         ----------
         constraints: list of _Constraint
@@ -1012,7 +973,6 @@ class _PureOrMixtureData:
         solvent_compounds: dict of int and float
             A dictionary of any explicitly defined solvent compounds in the
             system.
-
         Returns
         -------
         dict of int and float
@@ -1112,7 +1072,6 @@ class _PureOrMixtureData:
         constraints, compounds, solvent_mole_fractions=None, solvent_compounds=None
     ):
         """Converts a set of `_Constraint` to mole fractions.
-
         Parameters
         ----------
         constraints: list of _Constraint
@@ -1126,7 +1085,6 @@ class _PureOrMixtureData:
         solvent_compounds: dict of int and float
             A dictionary of any explicitly defined solvent compounds in the
             system.
-
         Returns
         -------
         dict of int and float
@@ -1209,7 +1167,6 @@ class _PureOrMixtureData:
     @staticmethod
     def build_substance(thermoml_property, constraints, compounds):
         """Build a Substance object from the extracted constraints and compounds.
-
         Parameters
         ----------
         thermoml_property: ThermoMLProperty
@@ -1218,7 +1175,6 @@ class _PureOrMixtureData:
             The ThermoML constraints.
         compounds: dict of int and _Compound
             A dictionary of the compounds this PureOrMixtureData was calculated for.
-
         Returns
         ----------
         Substance
@@ -1425,13 +1381,20 @@ class _PureOrMixtureData:
                 solvent_compounds,
             )
 
+        if len(mole_fractions) == len(compounds)-1:
+            sum_fraction = sum(mole_fractions.values())
+            mole_fractions[len(compounds)] = 1.0 - sum_fraction
+            print(mole_fractions)
         if len(mole_fractions) != len(compounds):
-
+            '''
             raise ValueError(
                 f"The number of mole fractions ({len(mole_fractions)}) does not "
                 f"equal the total number of compounds ({len(compounds)})"
             )
-
+            '''
+            print(compounds,mole_fractions)
+            substance = Substance()
+            return substance
         # Make sure we haven't picked up a dimensionless unit be accident.
         for compound_index in mole_fractions:
 
@@ -1475,7 +1438,6 @@ class _PureOrMixtureData:
 
         """Extract the measured properties defined by a ThermoML
         PureOrMixtureData node.
-
         Parameters
         ----------
         node: xml.etree.Element
@@ -1490,7 +1452,6 @@ class _PureOrMixtureData:
             The extracted variable definitions.
         compounds: dict of int and _Compound
             The extracted compounds.
-
         Returns
         ----------
         list of ThermoMLProperty
@@ -1629,7 +1590,6 @@ class _PureOrMixtureData:
     @staticmethod
     def from_xml_node(node, namespace, compounds):
         """Extracts all of the data in a ThermoML PureOrMixtureData node.
-
         Parameters
         ----------
         node: xml.etree.Element
@@ -1638,7 +1598,6 @@ class _PureOrMixtureData:
             The xml namespace.
         compounds: dict of int and _Compound
             A list of the already extracted `_Compound`'s.
-
         Returns
         ----------
         list of ThermoMLProperty
@@ -1748,12 +1707,10 @@ class ThermoMLProperty:
         @staticmethod
         def from_node(node):
             """Converts an `eStandardState` node a `ThermoMLProperty.SoluteStandardState`.
-
             Parameters
             ----------
             node: xml.etree.Element
                 The xml node to convert.
-
             Returns
             ----------
             ThermoMLProperty.SoluteStandardState
@@ -1811,7 +1768,6 @@ class ThermoMLProperty:
     ):
 
         """Extract any property or combined uncertainties from a property xml node.
-
         Parameters
         ----------
         node: Element
@@ -1863,7 +1819,6 @@ class ThermoMLProperty:
     @classmethod
     def from_xml_node(cls, node, namespace, parent_phases):
         """Creates a ThermoMLProperty from an xml node.
-
         Parameters
         ----------
         node: Element
@@ -1872,7 +1827,6 @@ class ThermoMLProperty:
             The xml namespace.
         parent_phases: PropertyPhase
             The phases specfied in the parent PureOrMixtureData node.
-
         Returns
         ----------
         _Compound
@@ -1998,7 +1952,6 @@ class ThermoMLProperty:
 
     def set_value(self, value, uncertainty):
         """Set the value and uncertainty of this property, adding units if necessary.
-
         Parameters
         ----------
         value: float or unit.Quantity
@@ -2025,20 +1978,14 @@ class ThermoMLProperty:
 
 class ThermoMLDataSet(PhysicalPropertyDataSet):
     """A dataset of physical property measurements created from a ThermoML dataset.
-
     Examples
     --------
-
     For example, we can use the DOI `10.1016/j.jct.2005.03.012` as a key
     for retrieving the dataset from the ThermoML Archive:
-
     >>> dataset = ThermoMLDataSet.from_doi('10.1016/j.jct.2005.03.012')
-
     You can also specify multiple ThermoML Archive keys to create a dataset from multiple ThermoML files:
-
     >>> thermoml_keys = ['10.1021/acs.jced.5b00365', '10.1021/acs.jced.5b00474']
     >>> dataset = ThermoMLDataSet.from_doi(*thermoml_keys)
-
     """
 
     registered_properties = {}
@@ -2050,12 +1997,10 @@ class ThermoMLDataSet(PhysicalPropertyDataSet):
     @classmethod
     def from_doi(cls, *doi_list):
         """Load a ThermoML data set from a list of DOIs
-
         Parameters
         ----------
         doi_list: str
             The list of DOIs to pull data from
-
         Returns
         -------
         ThermoMLDataSet
@@ -2083,12 +2028,10 @@ class ThermoMLDataSet(PhysicalPropertyDataSet):
     @classmethod
     def from_url(cls, *url_list):
         """Load a ThermoML data set from a list of URLs
-
         Parameters
         ----------
         url_list: str
             The list of URLs to pull data from
-
         Returns
         -------
         ThermoMLDataSet
@@ -2114,14 +2057,12 @@ class ThermoMLDataSet(PhysicalPropertyDataSet):
     @classmethod
     def _from_url(cls, url, source=None):
         """Load a ThermoML data set from a given URL
-
         Parameters
         ----------
         url: str
             The URL to pull data from
         source: Source, optional
             An optional source which gives more information (e.g DOIs) for the url.
-
         Returns
         ----------
         ThermoMLDataSet
@@ -2152,12 +2093,10 @@ class ThermoMLDataSet(PhysicalPropertyDataSet):
     @classmethod
     def from_file(cls, *file_list):
         """Load a ThermoML data set from a list of files
-
         Parameters
         ----------
         file_list: str
             The list of files to pull data from
-
         Returns
         -------
         ThermoMLDataSet
@@ -2185,12 +2124,10 @@ class ThermoMLDataSet(PhysicalPropertyDataSet):
     @classmethod
     def _from_file(cls, path):
         """Load a ThermoML data set from a given file
-
         Parameters
         ----------
         path: str
             The file path to pull data from
-
         Returns
         -------
         ThermoMLDataSet
@@ -2212,14 +2149,12 @@ class ThermoMLDataSet(PhysicalPropertyDataSet):
     @classmethod
     def from_xml(cls, xml, default_source):
         """Load a ThermoML data set from an xml object.
-
         Parameters
         ----------
         xml: str
             The xml string to parse.
         default_source: Source
             The source to use if one cannot be parsed from the archive itself.
-
         Returns
         -------
         ThermoMLDataSet
